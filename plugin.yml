@@ -1,0 +1,19 @@
+name: PMSocial
+main: DDSPlugins\PMSocial\PMSocial
+version: 0.0.1
+api: 2.0.0
+prefix: "PMSocial"
+description: "A plugin for PocketMiners which allows players to modify how they interact with others"
+author: "David Schwartz"
+website: "pocketminers.com"
+
+commands:
+  ignore:
+    description: "Ignore a player so that you cannot see them in chat or through PMs"
+    usage: "/ignore <player>"
+  unignore:
+    description: "Unignore a previously ignored player"
+    usage: "/unignore <player>"
+  ignorelist:
+    description: "Prints a list of players you've ignored"
+    usage: "/ignorelist"
