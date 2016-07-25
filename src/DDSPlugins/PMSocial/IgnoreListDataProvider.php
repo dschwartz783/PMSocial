@@ -85,7 +85,7 @@ class IgnoreListDataProvider
                 foreach ($ignored_player_list as $player_who_ignored) {
 
                     if (strtolower($player->getName()) == strtolower($player_who_ignored)) {
-                        $player_list += [$ignored_player];
+                        array_push($player_list, $ignored_player);
                     }
                 }
             }
