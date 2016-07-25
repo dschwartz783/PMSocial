@@ -28,6 +28,8 @@ class ChatListener implements Listener
         $this->plugin = $plugin;
     }
 
+
+
     function onPlayerChat(PlayerChatEvent $event){
         $allowedRecipients = [];
         if ($event->getPlayer() instanceof Player) {

@@ -39,7 +39,7 @@ class PMSocial extends PluginBase
                     if (count($args) == 1) {
 
                         if ($this->getServer()->getPlayerExact($args[0]) != null) {
-                            $this->ignoreListDataProvider->ignorePlayer($sender, $this->getServer()->getPlayer($args[0]));
+                            $this->ignoreListDataProvider->ignorePlayer($sender, $this->getServer()->getPlayerExact($args[0]));
                             return true;
                         } else {
                             $sender->sendMessage("Player cannot be found");

@@ -56,6 +56,7 @@ class IgnoreListDataProvider
         } else {
             $this->ignore_list[strtolower($ignoredPlayer->getName())] += [strtolower($sourcePlayer->getName())];
         }
+        $sourcePlayer->sendMessage("Ignoring player: " . $ignoredPlayer->getName());
         $this->update_json();
     }
 
@@ -69,6 +70,7 @@ class IgnoreListDataProvider
             }
             unset($this->ignore_list[strtolower($ignoredPlayer)]);
             $this->ignore_list[strtolower($ignoredPlayer)] = $temp_array;
+            $sourcePlayer->sendMessage("Unignoring player: " . $ignoredPlayer->getName());
             $this->update_json();
             return true;
         }
@@ -76,11 +78,19 @@ class IgnoreListDataProvider
     }
 
     function getIgnoreListForPlayer(Player $player) {
+
+        $player_list = [];
         if (array_key_exists(strtolower($player->getName()), $this->ignore_list)) {
-            return $this->ignore_list[strtolower($player->getName())];
-        } else {
-            return [];
+            foreach ($this->ignore_list as $ignored_player => $ignored_player_list) {
+                foreach ($ignored_player_list as $player) {
+
+                    if (strtolower($player) == strtolower($ignored_player)) {
+                        $player_list += [$ignored_player];
+                    }
+                }
+            }
         }
+        return $player_list;
     }
 
     function checkIgnore(Player $sourcePlayer, Player $destinationPlayer) {
