@@ -34,8 +34,8 @@
       <file leaf-file-name="IgnoreListDataProvider.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/DDSPlugins/PMSocial/IgnoreListDataProvider.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="72" column="43" selection-start-line="72" selection-start-column="43" selection-end-line="72" selection-end-column="43" />
+            <state relative-caret-position="194">
+              <caret line="86" column="53" selection-start-line="86" selection-start-column="53" selection-end-line="86" selection-end-column="53" />
               <folding>
                 <element signature="e#123#145#0#PHP" expanded="true" />
               </folding>
@@ -327,12 +327,12 @@
       <workItem from="1468997933803" duration="218000" />
       <workItem from="1469069015946" duration="706000" />
       <workItem from="1469349416867" duration="262000" />
-      <workItem from="1469397978102" duration="12403000" />
+      <workItem from="1469397978102" duration="13291000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="87826000" />
+    <option name="totallyTimeSpent" value="88714000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1680" height="973" extended-state="6" />
@@ -662,8 +662,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/DDSPlugins/PMSocial/IgnoreListDataProvider.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="72" column="43" selection-start-line="72" selection-start-column="43" selection-end-line="72" selection-end-column="43" />
+        <state relative-caret-position="194">
+          <caret line="86" column="53" selection-start-line="86" selection-start-column="53" selection-end-line="86" selection-end-column="53" />
           <folding>
             <element signature="e#123#145#0#PHP" expanded="true" />
           </folding>

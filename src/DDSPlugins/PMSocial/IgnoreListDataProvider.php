@@ -70,7 +70,7 @@ class IgnoreListDataProvider
             }
             unset($this->ignore_list[strtolower($ignoredPlayer)]);
             $this->ignore_list[strtolower($ignoredPlayer)] = $temp_array;
-            $sourcePlayer->sendMessage("Unignoring player: " . $ignoredPlayer->getName());
+            $sourcePlayer->sendMessage("Unignoring player: " . $ignoredPlayer);
             $this->update_json();
             return true;
         }
@@ -82,9 +82,9 @@ class IgnoreListDataProvider
         $player_list = [];
         if (array_key_exists(strtolower($player->getName()), $this->ignore_list)) {
             foreach ($this->ignore_list as $ignored_player => $ignored_player_list) {
-                foreach ($ignored_player_list as $player) {
+                foreach ($ignored_player_list as $player_who_ignored) {
 
-                    if (strtolower($player) == strtolower($ignored_player)) {
+                    if (strtolower($player->getName()) == strtolower($player_who_ignored)) {
                         $player_list += [$ignored_player];
                     }
                 }
