@@ -13,21 +13,19 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
 use DDSPlugins\PMSocial\IgnoreListDataProvider;
-use pocketmine\event\Listener;
-use pocketmine\utils\Config;
 
 class PMSocial extends PluginBase
 {
-    /** @var ChatListener $chatListener */
-    private $chatListener;
+    /** @var IgnoreListener $ignoreListener */
+    private $ignoreListener;
 
     /** @var IgnoreListDataProvider $ignoreListDataProvider */
     private $ignoreListDataProvider;
 
     function onEnable()
     {
-        $this->chatListener = new ChatListener($this);
-        $this->ignoreListDataProvider = $this->chatListener->ignoreListDataProvider;
+        $this->ignoreListener = new IgnoreListener($this);
+        $this->ignoreListDataProvider = $this->ignoreListener->ignoreListDataProvider;
         $this->getLogger()->info("PMSocial Enabled");
     }
 
