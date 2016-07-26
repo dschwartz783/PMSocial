@@ -37,23 +37,28 @@ class PMSocial extends PluginBase
             switch ($command->getName()) {
                 case "ignore":
                     if (count($args) == 1) {
-
-                        if ($this->getServer()->getPlayerExact($args[0]) != null) {
-                            $this->ignoreListDataProvider->ignorePlayer($sender, $this->getServer()->getPlayerExact($args[0]));
-                            return true;
+                        if (strtolower($sender->getName()) != strtolower($args[0])) {
+                            if ($this->getServer()->getPlayerExact($args[0]) != null) {
+                                $this->ignoreListDataProvider->ignorePlayer($sender, $this->getServer()->getPlayerExact($args[0]));
+                            } else {
+                                $sender->sendMessage("Player cannot be found");
+                            }
                         } else {
-                            $sender->sendMessage("Player cannot be found");
+                            $sender->sendMessage("You can't ignore yourself!");
                         }
+                        return true;
                     }
                     break;
 
                 case "unignore":
-                    if (!$this->ignoreListDataProvider->unignorePlayer($sender, $args[0])) {
-                        $sender->sendMessage("You aren't ignoring that player!");
-                    } else {
+                    if (count($args) == 1) {
+                        if (!$this->ignoreListDataProvider->unignorePlayer($sender, $args[0])) {
+                            $sender->sendMessage("You aren't ignoring " . $args[0] . "!");
+                        }
                         return true;
                     }
                     break;
+
                 case "ignorelist":
                     $ignore_list_string = "§cPlayers you're ignoring:\n";
                     $player_ignore_list = $this->ignoreListDataProvider->getIgnoreListForPlayer($sender);
@@ -71,14 +76,14 @@ class PMSocial extends PluginBase
                     break;
             }
         } else {
-                $this->getLogger()->error("Command cannot be run from console");
-                return true;
-            }
-            return false;
+            $this->getLogger()->error("Command cannot be run from console");
+            return true;
         }
-
-        function onDisable()
-        {
-            $this->ignoreListDataProvider->cleanUp();
-        }
+        return false;
     }
+
+    function onDisable()
+    {
+        $this->ignoreListDataProvider->cleanUp();
+    }
+}
