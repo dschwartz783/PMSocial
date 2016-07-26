@@ -9,7 +9,6 @@
 namespace DDSPlugins\PMSocial;
 
 use pocketmine\Player;
-use pocketmine\utils\Config;
 use DDSPlugins\PMSocial\PMSocial;
 use pocketmine\command\CommandSender;
 
@@ -80,13 +79,11 @@ class IgnoreListDataProvider
     function getIgnoreListForPlayer(Player $player) {
 
         $player_list = [];
-        if (array_key_exists(strtolower($player->getName()), $this->ignore_list)) {
-            foreach ($this->ignore_list as $ignored_player => $ignored_player_list) {
-                foreach ($ignored_player_list as $player_who_ignored) {
+        foreach ($this->ignore_list as $ignored_player => $ignored_player_list) {
+            foreach ($ignored_player_list as $player_who_ignored) {
 
-                    if (strtolower($player->getName()) == strtolower($player_who_ignored)) {
-                        array_push($player_list, $ignored_player);
-                    }
+                if (strtolower($player->getName()) == strtolower($player_who_ignored)) {
+                    array_push($player_list, $ignored_player);
                 }
             }
         }

@@ -15,5 +15,17 @@ commands:
     description: "Unignore a previously ignored player"
     usage: "/unignore <player>"
   ignorelist:
-    description: "Prints a list of players you've ignored"
+    description: "Displays a list of players you've ignored"
     usage: "/ignorelist"
+  friend:
+    description: "Friend a player, letting them teleport to you without requesting first"
+    usage: "/friend <player>"
+  unfriend:
+    description: "Unfriend a player"
+    usage: "/unfriend <player>"
+  tpfriend:
+    description: "Teleport to someone you have added as a friend, without requesting first"
+    usage: "/tpfriend <player>"
+  friendlist:
+    description: "Displays a list of players you've friended"
+    usage: "/friendlist"
