@@ -107,6 +107,7 @@ class PMSocial extends PluginBase
                         if (strtolower($sender->getName()) != strtolower($args[0])) {
                             if ($this->getServer()->getPlayerExact($args[0]) != null) {
                                 if ($this->friendListDataProvider->checkFriend($sender, $this->getServer()->getPlayerExact($args[0]))) {
+                                    $sender->sendMessage("Teleporting you to: " . $this->getServer()->getPlayerExact($args[0])->getName());
                                     $sender->teleport($this->getServer()->getPlayerExact($args[0]));
                                 } else {
                                     $sender->sendMessage("That player has not friended you!");
