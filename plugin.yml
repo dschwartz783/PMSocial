@@ -24,7 +24,7 @@ commands:
     description: "Unfriend a player"
     usage: "/unfriend <player>"
   tpfriend:
-    description: "Teleport to someone you have added as a friend, without requesting first"
+    description: "Teleport to someone who has added you as a friend, without requesting first"
     usage: "/tpfriend <player>"
   friendlist:
     description: "Displays a list of players you've friended"
