@@ -9,7 +9,7 @@ website: "pocketminers.com"
 
 commands:
   ignore:
-    description: "Ignore a player so that you cannot see them in chat or through PMs"
+    description: "Ignore a player so that you cannot see them in chat or through PMs, or receive tpa or tpahere requests"
     usage: "/ignore <player>"
   unignore:
     description: "Unignore a previously ignored player"
