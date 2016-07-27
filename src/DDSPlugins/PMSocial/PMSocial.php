@@ -84,7 +84,7 @@ class PMSocial extends PluginBase
                 if ($argPlayer != null) {
                     switch ($command->getName()) {
                         case "ignore":
-                            if (strtolower($sender->getName()) != strtolower($args[0])) {
+                            if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
                                 $this->ignoreListDataProvider->ignorePlayer($sender, $argPlayer);
                                 if ($this->friendListDataProvider->checkFriend($argPlayer, $sender)) {
                                     $this->friendListDataProvider->unfriendPlayer($sender, $argPlayer);
@@ -96,7 +96,7 @@ class PMSocial extends PluginBase
                             break;
 
                         case "friend":
-                            if (strtolower($sender->getName()) != strtolower($args[0])) {
+                            if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
                                     $this->friendListDataProvider->friendPlayer($sender, $argPlayer);
                                     if ($this->ignoreListDataProvider->checkIgnore($argPlayer, $sender)) {
                                         $this->ignoreListDataProvider->unignorePlayer($sender, $argPlayer);
@@ -107,7 +107,7 @@ class PMSocial extends PluginBase
                             return true;
                             break;
                         case "tpfriend":
-                            if (strtolower($sender->getName()) != strtolower($argPlayer)) {
+                            if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
                                 if ($this->friendListDataProvider->checkFriend($sender, $argPlayer)) {
                                     $sender->sendMessage("Teleporting you to: " . $argPlayer->getName());
                                     $sender->teleport($argPlayer);
