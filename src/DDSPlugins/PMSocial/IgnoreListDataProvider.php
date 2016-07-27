@@ -50,16 +50,20 @@ class IgnoreListDataProvider
     }
 
     function ignorePlayer(Player $sourcePlayer, Player $ignoredPlayer) {
-        if (!$ignoredPlayer->isOp()) {
-            if (!key_exists(strtolower($ignoredPlayer->getName()), $this->ignore_list)) {
-                $this->ignore_list[strtolower($ignoredPlayer->getName())] = [strtolower($sourcePlayer->getName())];
+        if (!$sourcePlayer->isOp()) {
+            if (!$ignoredPlayer->isOp()) {
+                if (!key_exists(strtolower($ignoredPlayer->getName()), $this->ignore_list)) {
+                    $this->ignore_list[strtolower($ignoredPlayer->getName())] = [strtolower($sourcePlayer->getName())];
+                } else {
+                    $this->ignore_list[strtolower($ignoredPlayer->getName())] += [strtolower($sourcePlayer->getName())];
+                }
+                $sourcePlayer->sendMessage("Ignoring player: " . $ignoredPlayer->getName());
+                $this->update_json();
             } else {
-                $this->ignore_list[strtolower($ignoredPlayer->getName())] += [strtolower($sourcePlayer->getName())];
+                $sourcePlayer->sendMessage("You cannot ignore staff. If you have any issues with a staff member, please contact an administrator.");
             }
-            $sourcePlayer->sendMessage("Ignoring player: " . $ignoredPlayer->getName());
-            $this->update_json();
         } else {
-            $sourcePlayer->sendMessage("You cannot ignore staff. If you have any issues with a staff member, please contact an administrator.");
+            $sourcePlayer->sendMessage("Staff are not allowed to ignore players.");
         }
     }
 
