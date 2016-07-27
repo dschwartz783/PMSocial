@@ -1,6 +1,6 @@
 name: PMSocial
 main: DDSPlugins\PMSocial\PMSocial
-version: 1.1.0
+version: 1.1.1
 api: 2.0.0
 prefix: "PMSocial"
 description: "A plugin for PocketMiners which allows players to modify how they interact with others"
