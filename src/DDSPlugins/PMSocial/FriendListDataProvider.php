@@ -59,19 +59,26 @@ class FriendListDataProvider
         $this->update_json();
     }
 
-    function unfriendPlayer(Player $sourcePlayer, string $friendedPlayer) {
-        if (isset($this->friend_list[strtolower($friendedPlayer)])) {
-            $temp_array = [];
-            foreach ($this->friend_list[strtolower($friendedPlayer)] as $player) {
-                if ($player != strtolower($sourcePlayer->getName())) {
-                    $temp_array += [$player];
+    function unfriendPlayer(Player $sourcePlayer, String $friendedPlayer) {
+        foreach (array_keys($this->friend_list) as $friend_key) {
+            if (preg_match(";^$friendedPlayer;", $friend_key)) {
+                $friendedPlayer = $friend_key;
+                $temp_array = [];
+                foreach ($this->friend_list[strtolower($friendedPlayer)] as $player) {
+                    if ($player != strtolower($sourcePlayer->getName())) {
+                        $temp_array += [$player];
+                    }
                 }
+                if (count($temp_array) === count($this->friend_list[strtolower($friendedPlayer)])) {
+                    continue;
+                }
+                //remove array to replace with temp one
+                unset($this->friend_list[strtolower($friendedPlayer)]);
+                $this->friend_list[strtolower($friendedPlayer)] = $temp_array;
+                $sourcePlayer->sendMessage("Unfriending player: " . $friendedPlayer);
+                $this->update_json();
+                return true;
             }
-            unset($this->friend_list[strtolower($friendedPlayer)]);
-            $this->friend_list[strtolower($friendedPlayer)] = $temp_array;
-            $sourcePlayer->sendMessage("Unfriending player: " . $friendedPlayer);
-            $this->update_json();
-            return true;
         }
         return false;
     }

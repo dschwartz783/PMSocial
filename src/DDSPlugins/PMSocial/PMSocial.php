@@ -37,33 +37,6 @@ class PMSocial extends PluginBase
     {
         if ($sender instanceof Player) {
             switch ($command->getName()) {
-                case "ignore":
-                    if (count($args) == 1) {
-                        if (strtolower($sender->getName()) != strtolower($args[0])) {
-                            if ($this->getServer()->getPlayerExact($args[0]) != null) {
-                                $this->ignoreListDataProvider->ignorePlayer($sender, $this->getServer()->getPlayerExact($args[0]));
-                                if ($this->friendListDataProvider->checkFriend($this->getServer()->getPlayerExact($args[0]), $sender)) {
-                                    $this->friendListDataProvider->unfriendPlayer($sender, $args[0]);
-                                }
-                            } else {
-                                $sender->sendMessage("Player cannot be found");
-                            }
-                        } else {
-                            $sender->sendMessage("You can't ignore yourself!");
-                        }
-                        return true;
-                    }
-                    break;
-
-                case "unignore":
-                    if (count($args) == 1) {
-                        if (!$this->ignoreListDataProvider->unignorePlayer($sender, $args[0])) {
-                            $sender->sendMessage("You aren't ignoring " . $args[0] . "!");
-                        }
-                        return true;
-                    }
-                    break;
-
                 case "ignorelist":
                     $ignore_list_string = "§cPlayers you're ignoring:\n";
                     $player_ignore_list = $this->ignoreListDataProvider->getIgnoreListForPlayer($sender);
@@ -76,50 +49,6 @@ class PMSocial extends PluginBase
                     }
                     $sender->sendMessage($ignore_list_string);
                     return true;
-                    break;
-                case "friend":
-                    if (count($args) == 1) {
-                        if (strtolower($sender->getName()) != strtolower($args[0])) {
-                            if ($this->getServer()->getPlayerExact($args[0]) != null) {
-                                $this->friendListDataProvider->friendPlayer($sender, $this->getServer()->getPlayerExact($args[0]));
-                                if ($this->ignoreListDataProvider->checkIgnore($this->getServer()->getPlayerExact($args[0]), $sender)) {
-                                    $this->ignoreListDataProvider->unignorePlayer($sender, $args[0]);
-                                }
-                            } else {
-                                $sender->sendMessage("Player cannot be found");
-                            }
-                        } else {
-                            $sender->sendMessage("You can't friend yourself!");
-                        }
-                        return true;
-                    }
-                    break;
-                case "unfriend":
-                    if (count($args) == 1) {
-                        if (!$this->friendListDataProvider->unfriendPlayer($sender, $args[0])) {
-                            $sender->sendMessage("You aren't friends with " . $args[0] . "!");
-                        }
-                        return true;
-                    }
-                    break;
-                case "tpfriend":
-                    if (count($args) == 1) {
-                        if (strtolower($sender->getName()) != strtolower($args[0])) {
-                            if ($this->getServer()->getPlayerExact($args[0]) != null) {
-                                if ($this->friendListDataProvider->checkFriend($sender, $this->getServer()->getPlayerExact($args[0]))) {
-                                    $sender->sendMessage("Teleporting you to: " . $this->getServer()->getPlayerExact($args[0])->getName());
-                                    $sender->teleport($this->getServer()->getPlayerExact($args[0]));
-                                } else {
-                                    $sender->sendMessage("That player has not friended you!");
-                                }
-                            } else {
-                                $sender->sendMessage("Player cannot be found");
-                            }
-                        } else {
-                            $sender->sendMessage("You can't teleport to yourself!");
-                        }
-                        return true;
-                    }
                     break;
                 case "friendlist":
                     $friend_list_string = "§cPlayers you're friends with:\n";
@@ -135,6 +64,67 @@ class PMSocial extends PluginBase
                     return true;
                 default:
                     break;
+            }
+            if (count($args) == 1) {
+                switch($command->getName()) {
+                    case "unignore":
+                        if (!$this->ignoreListDataProvider->unignorePlayer($sender, $args[0])) {
+                            $sender->sendMessage("You aren't ignoring " . $args[0] . "!");
+                        }
+                        return true;
+                        break;
+                    case "unfriend":
+                        if (!$this->friendListDataProvider->unfriendPlayer($sender, $args[0])) {
+                            $sender->sendMessage("You aren't friends with " . $args[0] . "!");
+                        }
+                        return true;
+                        break;
+                }
+                $argPlayer = $this->getServer()->getPlayer($args[0]);
+                if ($argPlayer != null) {
+                    switch ($command->getName()) {
+                        case "ignore":
+                            if (strtolower($sender->getName()) != strtolower($args[0])) {
+                                $this->ignoreListDataProvider->ignorePlayer($sender, $argPlayer);
+                                if ($this->friendListDataProvider->checkFriend($argPlayer, $sender)) {
+                                    $this->friendListDataProvider->unfriendPlayer($sender, $argPlayer);
+                                }
+                            } else {
+                                $sender->sendMessage("You can't ignore yourself!");
+                            }
+                            return true;
+                            break;
+
+                        case "friend":
+                            if (strtolower($sender->getName()) != strtolower($args[0])) {
+                                    $this->friendListDataProvider->friendPlayer($sender, $argPlayer);
+                                    if ($this->ignoreListDataProvider->checkIgnore($argPlayer, $sender)) {
+                                        $this->ignoreListDataProvider->unignorePlayer($sender, $argPlayer);
+                                    }
+                            } else {
+                                $sender->sendMessage("You can't friend yourself!");
+                            }
+                            return true;
+                            break;
+                        case "tpfriend":
+                            if (strtolower($sender->getName()) != strtolower($argPlayer)) {
+                                if ($this->friendListDataProvider->checkFriend($sender, $argPlayer)) {
+                                    $sender->sendMessage("Teleporting you to: " . $argPlayer->getName());
+                                    $sender->teleport($argPlayer);
+                                } else {
+                                    $sender->sendMessage("That player has not friended you!");
+                                }
+                            } else {
+                                $sender->sendMessage("You can't teleport to yourself!");
+                            }
+                            return true;
+                            break;
+                        default:
+                            break;
+                    }
+                }  else {
+                    $sender->sendMessage("Player cannot be found");
+                }
             }
         } else {
             $this->getLogger()->error("Command cannot be run from console");
