@@ -69,7 +69,7 @@ class IgnoreListDataProvider
 
     function unignorePlayer(Player $sourcePlayer, String $ignoredPlayer) {
         foreach (array_keys($this->ignore_list) as $ignore_key) {
-            if (preg_match(";^$ignoredPlayer;", $ignore_key)) {
+            if (preg_match(";^$ignoredPlayer;i", $ignore_key)) {
                 $ignoredPlayer = $ignore_key;
                 $temp_array = [];
                 foreach ($this->ignore_list[strtolower($ignoredPlayer)] as $player) {

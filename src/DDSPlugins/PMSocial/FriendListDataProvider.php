@@ -61,7 +61,7 @@ class FriendListDataProvider
 
     function unfriendPlayer(Player $sourcePlayer, String $friendedPlayer) {
         foreach (array_keys($this->friend_list) as $friend_key) {
-            if (preg_match(";^$friendedPlayer;", $friend_key)) {
+            if (preg_match(";^$friendedPlayer;i", $friend_key)) {
                 $friendedPlayer = $friend_key;
                 $temp_array = [];
                 foreach ($this->friend_list[strtolower($friendedPlayer)] as $player) {
