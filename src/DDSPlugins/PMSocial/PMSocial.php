@@ -24,10 +24,14 @@ class PMSocial extends PluginBase
     /** @var FriendListDataProvider $friendListDataProvider */
     private $friendListDataProvider;
 
+    /** @var BlockTpaListDataProvider */
+    private $blockTpaListDataProvider;
+
     function onEnable()
     {
         $this->ignoreListener = new IgnoreListener($this);
         $this->ignoreListDataProvider = $this->ignoreListener->ignoreListDataProvider;
+        $this->blockTpaListDataProvider = $this->ignoreListener->blockTpaListDataProvider;
         $this->friendListDataProvider = new FriendListDataProvider($this);
         $this->getLogger()->info("PMSocial Enabled");
     }
@@ -37,29 +41,13 @@ class PMSocial extends PluginBase
         if ($sender instanceof Player) {
             switch ($command->getName()) {
                 case "ignorelist":
-                    $ignore_list_string = "§cPlayers you're ignoring:\n";
-                    $player_ignore_list = $this->ignoreListDataProvider->getListForPlayer($sender);
-                    if ($player_ignore_list != []) {
-                        foreach ($player_ignore_list as $player) {
-                            $ignore_list_string .= ("§a - " . $player . "\n");
-                        }
-                    } else {
-                        $ignore_list_string .= "§a - None";
-                    }
-                    $sender->sendMessage($ignore_list_string);
+                    $this->sendList($this->ignoreListDataProvider, $sender, "§cPlayers you're ignoring:\n");
                     return true;
-                    break;
                 case "friendlist":
-                    $friend_list_string = "§cPlayers you're friends with:\n";
-                    $player_friend_list = $this->friendListDataProvider->getListForPlayer($sender);
-                    if ($player_friend_list != []) {
-                        foreach ($player_friend_list as $player) {
-                            $friend_list_string .= ("§a - " . $player . "\n");
-                        }
-                    } else {
-                        $friend_list_string .= "§a - None";
-                    }
-                    $sender->sendMessage($friend_list_string);
+                    $this->sendList($this->friendListDataProvider, $sender, "§cPlayers you're friends with:\n");
+                    return true;
+                case "blocktpalist":
+                    $this->sendList($this->blockTpaListDataProvider, $sender, "§cPlayers you're tpa blocking:\n");
                     return true;
             }
             if (count($args) == 1) {
@@ -67,48 +55,63 @@ class PMSocial extends PluginBase
                 $temp_player = null;
                 switch($command->getName()) {
                     case "unignore":
-                        if (!$this->ignoreListDataProvider->removePlayer($sender, $args[0], $temp_player)) {
-                            $sender->sendMessage("You aren't ignoring " . $args[0] . "!");
-                        } else {
+                        if ($this->ignoreListDataProvider->removePlayer($sender, $args[0], $temp_player)) {
+                            if ($this->blockTpaListDataProvider->removePlayer($sender, $args[0])) {
+                                $sender->sendMessage("Unblocking tpa requests from: " . $temp_player);
+                            }
                             $sender->sendMessage("Unignoring player: " . $temp_player);
-                        }
-                        return true;
-                        break;
-                    case "unfriend":
-                        if (!$this->friendListDataProvider->removePlayer($sender, $args[0], $temp_player)) {
-                            $sender->sendMessage("You aren't friends with " . $args[0] . "!");
                         } else {
-                            $sender->sendMessage("Unfriending player: " . $temp_player);
+                            $sender->sendMessage("You aren't ignoring " . $args[0] . "!");
                         }
                         return true;
-                        break;
+                    case "unfriend":
+                        if ($this->friendListDataProvider->removePlayer($sender, $args[0], $temp_player)) {
+                            $sender->sendMessage("Unfriending player: " . $temp_player);
+                        } else {
+                            $sender->sendMessage("You aren't friends with " . $args[0] . "!");
+                        }
+                        return true;
                 }
                 $argPlayer = $this->getServer()->getPlayer($args[0]);
                 if ($argPlayer != null) {
                     switch ($command->getName()) {
                         case "ignore":
-                            if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
-                                $sender->sendMessage("Unfriending player: " . $argPlayer->getName());
-                                $this->friendListDataProvider->removePlayer($sender, $argPlayer->getName());
-                                $sender->sendMessage("Ignoring player: " . $argPlayer->getName());
-                                $this->ignoreListDataProvider->addPlayer($sender, $argPlayer);
+                            if (!$sender->isOp()) {
+                                if (!$argPlayer->isOp()) {
+                                    if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
+                                        if ($this->friendListDataProvider->removePlayer($sender, $argPlayer->getName())) {
+                                            $sender->sendMessage("Unfriending player: " . $argPlayer->getName());
+                                        }
+                                        $sender->sendMessage("Ignoring player: " . $argPlayer->getName());
+                                        $this->ignoreListDataProvider->addPlayer($sender, $argPlayer);
+                                        $sender->sendMessage("Blocking tpa requests from: " . $argPlayer->getName());
+                                        $this->blockTpaListDataProvider->addPlayer($sender, $argPlayer);
+                                    } else {
+                                        $sender->sendMessage("You can't ignore yourself!");
+                                    }
+                                } else {
+                                    $sender->sendMessage("You cannot ignore staff. If you have any issues with a staff member, please contact an administrator.");
+                                }
                             } else {
-                                $sender->sendMessage("You can't ignore yourself!");
+                                $sender->sendMessage("Staff are not allowed to ignore players.");
                             }
                             return true;
-                            break;
 
                         case "friend":
                             if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
-                                $sender->sendMessage("Unignoring player: " . $argPlayer->getName());
-                                $this->ignoreListDataProvider->removePlayer($sender, $argPlayer->getName());
+                                if ($this->ignoreListDataProvider->removePlayer($sender, $argPlayer->getName())) {
+                                    $sender->sendMessage("Unignoring player: " . $argPlayer->getName());
+                                }
+                                if ($this->blockTpaListDataProvider->removePlayer($sender, $argPlayer->getName())) {
+                                    $sender->sendMessage("Unblocking tpa requests from: " . $argPlayer->getName());
+                                }
                                 $sender->sendMessage("Friending player: " . $argPlayer->getName());
                                 $this->friendListDataProvider->addPlayer($sender, $argPlayer);
                             } else {
                                 $sender->sendMessage("You can't friend yourself!");
                             }
                             return true;
-                            break;
+
                         case "tpfriend":
                             if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
                                 if ($this->friendListDataProvider->checkAdded($sender, $argPlayer)) {
@@ -121,7 +124,19 @@ class PMSocial extends PluginBase
                                 $sender->sendMessage("You can't teleport to yourself!");
                             }
                             return true;
-                            break;
+
+                        case "blocktpa":
+                            if (!$argPlayer->isOp()) {
+                                if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
+                                    $sender->sendMessage("Blocking tpa requests from: " . $argPlayer->getName());
+                                    $this->blockTpaListDataProvider->addPlayer($sender, $argPlayer);
+                                } else {
+                                    $sender->sendMessage("You can't block yourself!");
+                                }
+                            } else {
+                                $argPlayer->sendMessage("You cannot block tpa requests from staff. If you have any issues with a staff member, please contact an administrator.");
+                            }
+                            return true;
                     }
                 }  else {
                     $sender->sendMessage("Player cannot be found");
@@ -132,5 +147,18 @@ class PMSocial extends PluginBase
             return true;
         }
         return false;
+    }
+
+    function sendList(DataProvider $dataProvider, Player $sender, String $header) {
+        $list_string = $header;
+        $player_friend_list = $dataProvider->getListForPlayer($sender);
+        if ($player_friend_list != []) {
+            foreach ($player_friend_list as $player) {
+                $list_string .= ("§a - " . $player . "\n");
+            }
+        } else {
+            $list_string .= "§a - None";
+        }
+        $sender->sendMessage($list_string);
     }
 }

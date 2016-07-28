@@ -15,7 +15,7 @@ commands:
     description: "Unignore a previously ignored player"
     usage: "/unignore <player>"
   ignorelist:
-    description: "Displays a list of players you've ignored"
+    description: "Display a list of players you've ignored"
     usage: "/ignorelist"
   friend:
     description: "Friend a player, letting them teleport to you without requesting first"
@@ -27,5 +27,14 @@ commands:
     description: "Teleport to someone who has added you as a friend, without requesting first"
     usage: "/tpfriend <player>"
   friendlist:
-    description: "Displays a list of players you've friended"
+    description: "Display a list of players you've friended"
     usage: "/friendlist"
+  blocktpa:
+    description: "Block tpa and tpahere requests"
+    usage: "/blocktpa <player>"
+  unblocktpa:
+    description: "Unblock tpa and tpahere requests"
+    usage: "/unblocktpa <player>"
+  blocktpalist:
+    description: "List the players you are currently tpa blocking"
+    usage: "/blocktpalist"

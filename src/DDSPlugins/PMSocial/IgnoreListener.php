@@ -21,10 +21,14 @@ class IgnoreListener implements Listener
     /** @var IgnoreListDataProvider $ignoreListDataProvider */
     public $ignoreListDataProvider;
 
+    /** @var BlockTpaListDataProvider $blockTpaListDataProvider */
+    public $blockTpaListDataProvider;
+
     function __construct(PMSocial $plugin)
     {
         $plugin->getServer()->getPluginManager()->registerEvents($this, $plugin);
         $this->ignoreListDataProvider = new IgnoreListDataProvider($plugin);
+        $this->blockTpaListDataProvider = new BlockTpaListDataProvider($plugin);
         $this->plugin = $plugin;
     }
 
@@ -33,9 +37,9 @@ class IgnoreListener implements Listener
         $args = explode(" ", $event->getMessage());
         if (count($args) == 2) {
             $tpa_player = $this->plugin->getServer()->getPlayer($args[1]);
-            if ($tpa_player != null && ($args[0] == "/tpa" || $args[0] == "/tpahere") && $this->ignoreListDataProvider->checkAdded($event->getPlayer(), $tpa_player)) {
+            if ($tpa_player != null && ($args[0] == "/tpa" || $args[0] == "/tpahere") && $this->blockTpaListDataProvider->checkAdded($event->getPlayer(), $tpa_player)) {
                 $event->setCancelled(true);
-                $event->getPlayer()->sendMessage("This player is ignoring you. Teleport blocked.");
+                $event->getPlayer()->sendMessage("This player is blocking you. Request aborted.");
             }
         }
     }
