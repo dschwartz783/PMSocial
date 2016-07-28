@@ -27,10 +27,6 @@ class IgnoreListDataProvider extends DataProvider
         $this->ignore_json_path = $this->json_path;
     }
 
-    function getIgnoreList() {
-        return $this->ignore_list;
-    }
-
     function addPlayer(Player $sourcePlayer, Player $ignoredPlayer) {
         if (!$sourcePlayer->isOp()) {
             if (!$ignoredPlayer->isOp()) {

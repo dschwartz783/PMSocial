@@ -24,8 +24,4 @@ class FriendListDataProvider extends DataProvider
         $this->friend_list = $this->list;
         $this->friend_json_path = $this->json_path;
     }
-
-    function getFriendList() {
-        return $this->friend_list;
-    }
 }
