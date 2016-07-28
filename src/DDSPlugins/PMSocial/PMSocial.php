@@ -106,6 +106,9 @@ class PMSocial extends PluginBase
                                     $sender->sendMessage("Unblocking tpa requests from: " . $argPlayer->getName());
                                 }
                                 $sender->sendMessage("Friending player: " . $argPlayer->getName());
+                                if (!$this->ignoreListDataProvider->checkAdded($sender, $argPlayer) && !$this->friendListDataProvider->checkAdded($sender, $argPlayer)) {
+                                    $argPlayer->sendMessage($sender->getName() . " has added you as a friend!\nType /friend " . $sender->getName() . " to add them back!");
+                                }
                                 $this->friendListDataProvider->addPlayer($sender, $argPlayer);
                             } else {
                                 $sender->sendMessage("You can't friend yourself!");
