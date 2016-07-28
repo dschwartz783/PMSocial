@@ -12,7 +12,6 @@ use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
-use DDSPlugins\PMSocial\IgnoreListDataProvider;
 
 class PMSocial extends PluginBase
 {
@@ -39,7 +38,7 @@ class PMSocial extends PluginBase
             switch ($command->getName()) {
                 case "ignorelist":
                     $ignore_list_string = "§cPlayers you're ignoring:\n";
-                    $player_ignore_list = $this->ignoreListDataProvider->getIgnoreListForPlayer($sender);
+                    $player_ignore_list = $this->ignoreListDataProvider->getListForPlayer($sender);
                     if ($player_ignore_list != []) {
                         foreach ($player_ignore_list as $player) {
                             $ignore_list_string .= ("§a - " . $player . "\n");
@@ -52,7 +51,7 @@ class PMSocial extends PluginBase
                     break;
                 case "friendlist":
                     $friend_list_string = "§cPlayers you're friends with:\n";
-                    $player_friend_list = $this->friendListDataProvider->getFriendListForPlayer($sender);
+                    $player_friend_list = $this->friendListDataProvider->getListForPlayer($sender);
                     if ($player_friend_list != []) {
                         foreach ($player_friend_list as $player) {
                             $friend_list_string .= ("§a - " . $player . "\n");
@@ -62,21 +61,24 @@ class PMSocial extends PluginBase
                     }
                     $sender->sendMessage($friend_list_string);
                     return true;
-                default:
-                    break;
             }
             if (count($args) == 1) {
                 //These cases cannot use the $argPlayer variable, because argPlayer may be null, if the player isn't online
+                $temp_player = null;
                 switch($command->getName()) {
                     case "unignore":
-                        if (!$this->ignoreListDataProvider->unignorePlayer($sender, $args[0])) {
+                        if (!$this->ignoreListDataProvider->removePlayer($sender, $args[0], $temp_player)) {
                             $sender->sendMessage("You aren't ignoring " . $args[0] . "!");
+                        } else {
+                            $sender->sendMessage("Unignoring player: " . $temp_player);
                         }
                         return true;
                         break;
                     case "unfriend":
-                        if (!$this->friendListDataProvider->unfriendPlayer($sender, $args[0])) {
+                        if (!$this->friendListDataProvider->removePlayer($sender, $args[0], $temp_player)) {
                             $sender->sendMessage("You aren't friends with " . $args[0] . "!");
+                        } else {
+                            $sender->sendMessage("Unfriending player: " . $temp_player);
                         }
                         return true;
                         break;
@@ -86,8 +88,10 @@ class PMSocial extends PluginBase
                     switch ($command->getName()) {
                         case "ignore":
                             if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
-                                $this->ignoreListDataProvider->ignorePlayer($sender, $argPlayer);
-                                $this->friendListDataProvider->unfriendPlayer($sender, $argPlayer->getName());
+                                $sender->sendMessage("Unfriending player: " . $argPlayer->getName());
+                                $this->friendListDataProvider->removePlayer($sender, $argPlayer->getName());
+                                $sender->sendMessage("Ignoring player: " . $argPlayer->getName());
+                                $this->ignoreListDataProvider->addPlayer($sender, $argPlayer);
                             } else {
                                 $sender->sendMessage("You can't ignore yourself!");
                             }
@@ -96,8 +100,10 @@ class PMSocial extends PluginBase
 
                         case "friend":
                             if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
-                                $this->friendListDataProvider->friendPlayer($sender, $argPlayer);
-                                $this->ignoreListDataProvider->unignorePlayer($sender, $argPlayer->getName());
+                                $sender->sendMessage("Unignoring player: " . $argPlayer->getName());
+                                $this->ignoreListDataProvider->removePlayer($sender, $argPlayer->getName());
+                                $sender->sendMessage("Friending player: " . $argPlayer->getName());
+                                $this->friendListDataProvider->addPlayer($sender, $argPlayer);
                             } else {
                                 $sender->sendMessage("You can't friend yourself!");
                             }
@@ -105,7 +111,7 @@ class PMSocial extends PluginBase
                             break;
                         case "tpfriend":
                             if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
-                                if ($this->friendListDataProvider->checkFriend($sender, $argPlayer)) {
+                                if ($this->friendListDataProvider->checkAdded($sender, $argPlayer)) {
                                     $sender->sendMessage("Teleporting you to: " . $argPlayer->getName());
                                     $sender->teleport($argPlayer);
                                 } else {
@@ -115,8 +121,6 @@ class PMSocial extends PluginBase
                                 $sender->sendMessage("You can't teleport to yourself!");
                             }
                             return true;
-                            break;
-                        default:
                             break;
                     }
                 }  else {
@@ -128,10 +132,5 @@ class PMSocial extends PluginBase
             return true;
         }
         return false;
-    }
-
-    function onDisable()
-    {
-        $this->ignoreListDataProvider->cleanUp();
     }
 }

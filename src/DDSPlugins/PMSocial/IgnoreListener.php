@@ -8,7 +8,6 @@
 
 namespace DDSPlugins\PMSocial;
 
-use pocketmine\command\ConsoleCommandSender;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
@@ -34,7 +33,7 @@ class IgnoreListener implements Listener
         $args = explode(" ", $event->getMessage());
         if (count($args) == 2) {
             $tpa_player = $this->plugin->getServer()->getPlayer($args[1]);
-            if ($tpa_player != null && ($args[0] == "/tpa" || $args[0] == "/tpahere") && $this->ignoreListDataProvider->checkIgnore($event->getPlayer(), $tpa_player)) {
+            if ($tpa_player != null && ($args[0] == "/tpa" || $args[0] == "/tpahere") && $this->ignoreListDataProvider->checkAdded($event->getPlayer(), $tpa_player)) {
                 $event->setCancelled(true);
                 $event->getPlayer()->sendMessage("This player is ignoring you. Teleport blocked.");
             }
@@ -48,7 +47,7 @@ class IgnoreListener implements Listener
                 //if recipient is instance of Player
                 if ($recipient instanceof Player) {
                     //if that player is not ignored
-                    if (!$this->ignoreListDataProvider->checkIgnore($event->getPlayer(), $recipient)) {
+                    if (!$this->ignoreListDataProvider->checkAdded($event->getPlayer(), $recipient)) {
                         array_push($allowedRecipients, $recipient);
                     }
                 } else {

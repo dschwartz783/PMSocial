@@ -8,113 +8,24 @@
 
 namespace DDSPlugins\PMSocial;
 
-use pocketmine\Player;
-use DDSPlugins\PMSocial\PMSocial;
-use pocketmine\command\CommandSender;
-
-class FriendListDataProvider
+class FriendListDataProvider extends DataProvider
 {
     /** @var PMSocial $plugin */
-    private $plugin;
+    protected $plugin;
 
     /** @var string $friend_json_path*/
-    private $friend_json_path;
+    protected $friend_json_path = "hi";
 
     /** @var array $friend_list */
-    private $friend_list;
+    protected $friend_list;
 
-    function __construct(PMSocial $plugin)
-    {
-        $this->plugin = $plugin;
-        $this->friend_json_path = $plugin->getDataFolder() . "friends.json";
-
-        if (!is_dir($plugin->getDataFolder())) {
-            mkdir($plugin->getDataFolder());
-        }
-
-        $friend_file = null;
-        if (!is_file($this->friend_json_path)) {
-            $friend_file = fopen($this->friend_json_path, "w+");
-            fwrite($friend_file, "{}");
-            $this->friend_list = [];
-        } else {
-            $friend_file = fopen($this->friend_json_path, "r");
-            $this->friend_list = json_decode(fread($friend_file, filesize($this->friend_json_path)), true);
-        }
-        fclose($friend_file);
-
+    function __construct(PMSocial $plugin) {
+        parent::__construct($plugin, "friends.json");
+        $this->friend_list = $this->list;
+        $this->friend_json_path = $this->json_path;
     }
 
     function getFriendList() {
         return $this->friend_list;
-    }
-
-    function friendPlayer(Player $sourcePlayer, Player $friendedPlayer) {
-        if (!key_exists(strtolower($friendedPlayer->getName()), $this->friend_list)) {
-            $this->friend_list[strtolower($friendedPlayer->getName())] = [strtolower($sourcePlayer->getName())];
-        } else {
-            $this->friend_list[strtolower($friendedPlayer->getName())] += [strtolower($sourcePlayer->getName())];
-        }
-        $sourcePlayer->sendMessage("Friending player: " . $friendedPlayer->getName());
-        $this->update_json();
-    }
-
-    function unfriendPlayer(Player $sourcePlayer, String $friendedPlayer) {
-        foreach (array_keys($this->friend_list) as $friend_key) {
-            if (preg_match(";^$friendedPlayer;i", $friend_key)) {
-                $friendedPlayer = $friend_key;
-                $temp_array = [];
-                foreach ($this->friend_list[strtolower($friendedPlayer)] as $player) {
-                    if ($player != strtolower($sourcePlayer->getName())) {
-                        $temp_array += [$player];
-                    }
-                }
-                if (count($temp_array) === count($this->friend_list[strtolower($friendedPlayer)])) {
-                    continue;
-                }
-                //remove array to replace with temp one
-                unset($this->friend_list[strtolower($friendedPlayer)]);
-                $this->friend_list[strtolower($friendedPlayer)] = $temp_array;
-                $sourcePlayer->sendMessage("Unfriending player: " . $friendedPlayer);
-                $this->update_json();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function getFriendListForPlayer(Player $player) {
-
-        $player_list = [];
-        foreach ($this->friend_list as $friended_player => $friended_player_list) {
-            foreach ($friended_player_list as $player_who_friended) {
-
-                if (strtolower($player->getName()) == strtolower($player_who_friended)) {
-                    array_push($player_list, $friended_player);
-                }
-            }
-        }
-        return $player_list;
-    }
-
-    function checkFriend(Player $sourcePlayer, Player $destinationPlayer) {
-        if (array_key_exists(strtolower($sourcePlayer->getName()), $this->friend_list)) {
-            foreach ($this->friend_list[strtolower($sourcePlayer->getName())] as $friended_by_player) {
-                if ($friended_by_player === strtolower($destinationPlayer->getName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    function update_json() {
-        $friend_file = fopen($this->friend_json_path, "w");
-        fwrite($friend_file, json_encode($this->friend_list));
-        fclose($friend_file);
-    }
-
-    function cleanUp() {
-        $this->plugin->getLogger()->info("cleaning up...");
     }
 }
