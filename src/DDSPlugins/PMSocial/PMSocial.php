@@ -66,6 +66,7 @@ class PMSocial extends PluginBase
                     break;
             }
             if (count($args) == 1) {
+                //These cases cannot use the $argPlayer variable, because argPlayer may be null, if the player isn't online
                 switch($command->getName()) {
                     case "unignore":
                         if (!$this->ignoreListDataProvider->unignorePlayer($sender, $args[0])) {
@@ -86,9 +87,7 @@ class PMSocial extends PluginBase
                         case "ignore":
                             if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
                                 $this->ignoreListDataProvider->ignorePlayer($sender, $argPlayer);
-                                if ($this->friendListDataProvider->checkFriend($argPlayer, $sender)) {
-                                    $this->friendListDataProvider->unfriendPlayer($sender, $argPlayer);
-                                }
+                                $this->friendListDataProvider->unfriendPlayer($sender, $argPlayer->getName());
                             } else {
                                 $sender->sendMessage("You can't ignore yourself!");
                             }
@@ -97,10 +96,8 @@ class PMSocial extends PluginBase
 
                         case "friend":
                             if (strtolower($sender->getName()) != strtolower($argPlayer->getName())) {
-                                    $this->friendListDataProvider->friendPlayer($sender, $argPlayer);
-                                    if ($this->ignoreListDataProvider->checkIgnore($argPlayer, $sender)) {
-                                        $this->ignoreListDataProvider->unignorePlayer($sender, $argPlayer);
-                                    }
+                                $this->friendListDataProvider->friendPlayer($sender, $argPlayer);
+                                $this->ignoreListDataProvider->unignorePlayer($sender, $argPlayer->getName());
                             } else {
                                 $sender->sendMessage("You can't friend yourself!");
                             }
