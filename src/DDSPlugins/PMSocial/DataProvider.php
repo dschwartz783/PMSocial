@@ -28,7 +28,7 @@ abstract class DataProvider
 
         $file = null;
         if (!is_file($this->json_path)) {
-            $file = fopen($this->json_path, "w+");
+            $file = fopen($this->json_path, "w");
             fwrite($file, "{}");
             $this->list = [];
         } else {
@@ -40,11 +40,11 @@ abstract class DataProvider
     }
 
     function addPlayer(Player $sourcePlayer, Player $addedPlayer) {
+        $temp_array = [];
         if (!key_exists(strtolower($addedPlayer->getName()), $this->list)) {
-            $this->list[strtolower($addedPlayer->getName())] = [strtolower($sourcePlayer->getName())];
-        } else {
-            $this->list[strtolower($addedPlayer->getName())] += [strtolower($sourcePlayer->getName())];
+            $this->list[strtolower($addedPlayer->getName())] = $temp_array;
         }
+        array_push($this->list[strtolower($addedPlayer->getName())], strtolower($sourcePlayer->getName()));
         $this->update_json();
     }
 
